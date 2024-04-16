@@ -12,12 +12,15 @@ export default function Logout() {
     It checks if a JWT token exists in cookies. 
     If it does, it sets the JWT cookie to null effectively removing it.
     Then, it navigates the user to the login page. */
-  const handleLoginClick = () => {
+  const handleLoginClick = (e) => {
+    e.preventDefault();
     if (cookies.jwt) {
       // set the JWT cookie to null
       setCookie('jwt', null);
+      
     }   
     navigate("/login");
+    console.log('jwt logout',cookies);          
   }
   return (
     <Container>

@@ -42,7 +42,7 @@ export default function BlogPosts() {
     .then((data) => setPosts(data))
     .catch((error) => console.error("Error:", error));
   }
-
+  console.log('All Posts', posts);
   // Display Top menu (Home, Add Post and Log out), Home page, hero picture, and All blog posts by routing to BlogPostCard
   return (
     <Col sm={12} className="bg-light" style={{ border: "1px solid lightgrey" }}>

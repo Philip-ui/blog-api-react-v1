@@ -36,8 +36,7 @@ export default function BlogPostCard({ postId }) {
         console.error("Error:", error);
       }
     };
-
-    fetchPost();
+    fetchPost();    
   }, [postId]);
  
   /* This function handles the deletion of the blog post.
@@ -59,15 +58,17 @@ export default function BlogPostCard({ postId }) {
         },
       });
       setPost(null);
+      console.log('Post deleted');
       handleClose();
     } catch (error) {
       console.error("Error:", error);
     }
   };
-
+  
   if (!post) {
     return null; // Post has been deleted or not found
   }
+ 
   // Get individual post with edit and delete button on each posts
   return (
     <Row 
@@ -109,5 +110,6 @@ export default function BlogPostCard({ postId }) {
       </Modal>
     </Row>
   )
+  
 }
 

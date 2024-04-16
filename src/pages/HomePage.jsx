@@ -27,6 +27,7 @@ Then, it navigates the user to the login page.
     if (cookies.jwt) {
       // set the JWT cookie to null
       setCookie('jwt', null);
+      console.log('jwt logout',cookies);
     }   
     navigate("/login");
   };

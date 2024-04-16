@@ -66,6 +66,8 @@ export default function EditBlogPost() {
         Authorization: token // Attach JWT token to request headers
       }
     });
+    console.log("token", token);
+    console.log('blog post is Edited');
     navigate("/home");     
     }
     catch (error) {console.error('Error updating post:', error);

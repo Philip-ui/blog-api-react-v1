@@ -37,7 +37,9 @@ export default function AuthPage() {
         // Set the JWT token as a cookie
         setCookie('jwt', token, { path: '/' });        
         console.log("Login was successful, token saved");
+        
         navigate("/home");
+        console.log('jwt',cookies);
       }
       /* If there are errors, it handles different error cases (e.g., no such username, incorrect password) 
       and sets appropriate error messages.*/
