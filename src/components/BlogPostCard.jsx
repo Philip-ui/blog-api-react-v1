@@ -98,7 +98,7 @@ export default function BlogPostCard({ postId }) {
         <Modal.Header closeButton>
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this todo?</Modal.Body>
+        <Modal.Body>Are you sure you want to delete this blog?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Cancel
