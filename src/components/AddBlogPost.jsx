@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Form, Container, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useCookies  } from "react-cookie";
@@ -15,7 +15,9 @@ export default function AddBlogPost() {
 
   var token = '';
   const navigate = useNavigate();
-
+  useEffect(() => {
+    if (cookies.jwt == null) navigate("/login");
+  }, [cookies, navigate]);
   // This function handles the submission of the blog post form. Saving blog post to back end database
   const handleSave = async (e) => {
     e.preventDefault();  // prevents the default form submission behavior.  

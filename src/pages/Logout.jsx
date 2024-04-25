@@ -7,7 +7,8 @@ export default function Logout() {
   const navigate = useNavigate();
   //initializes state variables using the useCookies hook, specifically fetching the JWT token from cookies.
   const [cookies, setCookie] = useCookies(['jwt']);
-
+  // Sets the JWT cookie to null
+  setCookie('jwt', null);
   /*This function handles the click event of the login button.
     It checks if a JWT token exists in cookies. 
     If it does, it sets the JWT cookie to null effectively removing it.

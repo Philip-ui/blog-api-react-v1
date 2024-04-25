@@ -15,8 +15,8 @@ export default function HomePage() {
   If there's no authentication token (authToken is falsy), it navigates the user to the login page.
   */
   useEffect(() => {
-    if (!authToken) navigate("/login");
-  }, [authToken, navigate]);
+    if (!authToken  || cookies == null) navigate("/login");
+  }, [authToken, cookies, navigate]);
 
   /* This function handles the logout action.
 It checks if a JWT token exists in cookies. 

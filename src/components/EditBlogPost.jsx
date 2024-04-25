@@ -38,7 +38,8 @@ export default function EditBlogPost() {
       }
     };
     fetchPost();
-  }, [postId]);
+    if (cookies.jwt == null) navigate("/login");    
+  }, [cookies, navigate, postId]);
 
   // This function handles the submission of the edited blog post form.
   const handleSubmit = async (e) => {
@@ -47,7 +48,7 @@ export default function EditBlogPost() {
     // checks if the user is authenticated by verifying the presence of a JWT token in cookies.
     if (!token) {
       console.error('User is not authenticated');
-      setCookies('jwt', null);
+      setCookies('jwt', null);      
       return;
     }
     /* Makes an HTTP PUT request to the server to update the post with the specified postId.

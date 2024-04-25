@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button, Row, Col, Card, Modal } from "react-bootstrap";
 import { useCookies  } from "react-cookie";
 
+
 /* This component is responsible for displaying individual blog posts with 
    options to edit and delete them and accepts postId as a prop.
 */
@@ -11,7 +12,8 @@ export default function BlogPostCard({ postId }) {
   //show (to manage the visibility of the delete confirmation modal), and cookies using the useCookies hook.
    const[post, setPost] = useState([]);
    const [show, setShow] = useState(false); 
-   const [cookies, setCookies] = useCookies(['jwt']);  
+   const [cookies, setCookies] = useCookies(['jwt']);
+     
    
    
   const handleClose = () => setShow(false);
@@ -48,7 +50,7 @@ export default function BlogPostCard({ postId }) {
   const deletePost = async () => {
     if (!token) {
       console.error('User is not authenticated');
-      setCookies('jwt', null);
+      setCookies('jwt', null);      
       return;
     }
     try {      
