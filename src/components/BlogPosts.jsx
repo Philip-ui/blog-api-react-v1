@@ -109,7 +109,8 @@ export default function BlogPosts() {
       <p>This is my Blog Posts. I post about virtually anything. It can be topics like A day in the Life of a Software Engineer to Animal Kingdom, King Kong vs. Godzilla.</p>
       <p>
         <strong>271</strong> Following <strong>610</strong> Followers
-      </p>      
+      </p>
+      
       {posts.length > 0 && posts.map((post) => (       
         <BlogPostCard 
           key={post.id} 
