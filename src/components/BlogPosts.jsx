@@ -1,6 +1,6 @@
 import {jwtDecode} from "jwt-decode";
 import { useEffect, useState } from "react";
-import { Button, Col, Image, Nav, Row, } from "react-bootstrap";
+import { Button, Col, Image, Nav, Row, Spinner } from "react-bootstrap";
 import BlogPostCard from "./BlogPostCard";
 import { useCookies } from "react-cookie";
 
@@ -8,6 +8,8 @@ import { useCookies } from "react-cookie";
 export default function BlogPosts() {
   // Initializes state variables for posts using the useState hook to manage the list of blog posts.
   const [posts, setPosts] = useState([]);
+  // State variable to track loading state
+  const [loading, setLoading] = useState(false); 
   // Initializes cookies using the useCookies hook.
   const [cookies] = useCookies(['jwt']);
   
@@ -35,16 +37,31 @@ export default function BlogPosts() {
 
   /*This function sends a GET request to fetch all blog posts from the server.
     Upon receiving a response, it sets the posts state variable with the retrieved data.
-  */  
+  */
+  
   const fetchPosts = () => {
+    setLoading(true); // Start loading spinner when fetching data
     fetch(`https://075588d3-6a91-4958-b560-4bf287cfade2-00-3aqtr78zcqhsa.picard.replit.dev/posts`)
     .then((response) => response.json())
-    .then((data) => setPosts(data))
-    .catch((error) => console.error("Error:", error));
+    .then((data) => {
+      setPosts(data);
+      setLoading(false); // Stop loading spinner after data is fetched
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      setLoading(false); // Stop loading spinner on error
+    });
   }
+ 
   console.log('All Posts', posts);
   // Display Top menu (Home, Add Post and Log out), Home page, hero picture, and All blog posts by routing to BlogPostCard
   return (
+    <>
+    {loading ? ( // Render loading spinner while fetching data
+      <Row className="justify-content-center">
+        <Spinner animation="border" className="mt-3" variant="primary" />
+      </Row>
+    ) : (
     <Col sm={12} className="bg-light" style={{ border: "1px solid lightgrey" }}>
       <Nav variant="pills" defaultActiveKey="/home" justify>
         <Nav.Item>
@@ -92,8 +109,7 @@ export default function BlogPosts() {
       <p>This is my Blog Posts. I post about virtually anything. It can be topics like A day in the Life of a Software Engineer to Animal Kingdom, King Kong vs. Godzilla.</p>
       <p>
         <strong>271</strong> Following <strong>610</strong> Followers
-      </p>
-
+      </p>      
       {posts.length > 0 && posts.map((post) => (       
         <BlogPostCard 
           key={post.id} 
@@ -105,5 +121,7 @@ export default function BlogPosts() {
          />
       ))}
     </Col>
+     )}
+   </>
   )
 }

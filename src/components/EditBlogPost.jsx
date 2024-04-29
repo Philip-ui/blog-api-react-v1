@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Form, Button, Row, Col, Container } from 'react-bootstrap';
+import { Form, Button, Row, Col, Container, Spinner } from 'react-bootstrap';
 import axios from 'axios';
 import { useCookies  } from "react-cookie";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,6 +13,7 @@ export default function EditBlogPost() {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(false); // State variable to track loading state
 
   // Initializes cookies using the useCookies hook.
   const [cookies, setCookies] = useCookies(['jwt']);
@@ -27,6 +28,7 @@ export default function EditBlogPost() {
     Upon successful fetch, it updates the state variables title, author, and content with the retrieved data.
     */
     const fetchPost = async () => {
+      setLoading(true); // Start loading spinner when fetching data
       try {
         const response = await axios.get(`https://075588d3-6a91-4958-b560-4bf287cfade2-00-3aqtr78zcqhsa.picard.replit.dev/posts/${postId}`);
         const postData = response.data;
@@ -36,6 +38,7 @@ export default function EditBlogPost() {
       } catch (error) {
         console.error('Error fetching post:', error);
       }
+      setLoading(false); // Stop loading spinner after data is fetched
     };
     fetchPost();
     if (cookies.jwt == null) navigate("/login");    
@@ -80,8 +83,9 @@ export default function EditBlogPost() {
     <Container >
         <Row className="d-flex">
           <Col sm={4}></Col>
+          {!loading && ( // Render the edit form only when not loading
             <Col className="my-3 border border-success rounded m-2 p-2 bg-success-subtle bg-gradient text-grey" sm={4}>
-                <h2>Edit Post</h2>
+              <h2>Edit Post</h2>
                 <Form onSubmit={handleSubmit}>
                   <Form.Group controlId="title">
                     <Form.Label>Title</Form.Label>
@@ -114,8 +118,14 @@ export default function EditBlogPost() {
                   </Button>
                 </Form>
               </Col>
+              )}
               <Col sm={4}></Col> 
             </Row>
+            {loading && ( // Show loading spinner while fetching data
+              <Row className="justify-content-center">
+                <Spinner animation="border" className="mt-3" variant="primary" />
+              </Row>
+            )}
         </Container>      
   );
 }
