@@ -1,5 +1,5 @@
-import { Button, Col, Row, Form, Container } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { Button, Col, Row, Form, Container, Modal } from "react-bootstrap";
+import {  useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
@@ -17,10 +17,99 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");  
   const [usernameError, setUsernameError] = useState(""); 
   const [passwordError, setPasswordError] = useState("");
+  const [modalShow, setModalShow] = useState(false);
+  const handleShowSignUp = () => setModalShow(true);
+  const [passwordStrengthError, setPasswordStrengthError] = useState("");
+  const [usernameAvailabilityError, setUsernameAvailabilityError] = useState("");
+  //const [show, setShow] = useState(false);
+  //const handleShowLogin = () => setModalShow("Login");
   
   //navigate is a function provided by useNavigate to navigate between routes.
   const navigate = useNavigate();
   
+  /* This effect hook runs when the component mounts.
+It checks if a JWT token exists in cookies.
+If a token exists, it automatically redirects the user to the home page.*/
+useEffect(() => {
+  const token = cookies.jwt;
+  if (token) {
+    navigate("/home");
+  }
+}, [navigate, cookies]);
+
+ // Function to check password strength
+ const isPasswordStrong = (password) => {
+  // Implement your password strength validation logic here
+  // For example, check if the password contains a special symbol, an uppercase letter, and a number
+  const specialSymbolRegex = /[!@#$%^&*(),.?":{}|<>]/;
+  const uppercaseRegex = /[A-Z]/;
+  const numberRegex = /[0-9]/;
+
+  if (
+    specialSymbolRegex.test(password) &&
+    uppercaseRegex.test(password) &&
+    numberRegex.test(password)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// Function to check username availability
+const isUsernameAvailable = async (username) => {
+  try {
+    const res = await axios.get(`${url}/check-username/${username}`);
+    res.data.available;
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    // Reset previous error messages    
+    setPasswordStrengthError("");
+    //setUsernameError("");
+    setUsernameAvailabilityError("");
+
+    // Check username availability
+  const isAvailable = await isUsernameAvailable(username);
+  if (!isAvailable) {
+    setUsernameAvailabilityError("Username is already in use. Please choose another.");
+    return;
+  } 
+  
+
+
+  // Check password strength
+  if (!isPasswordStrong(password)) {
+    setPasswordStrengthError(
+      "Password must contain a special symbol, an uppercase letter, and a number."
+    );
+    return;
+  }
+
+    try {
+      const res = await axios.post(`${url}/signup`, { username, password });
+      console.log('data', res.data); 
+      const token = res.data.token;      
+      setCookie('jwt', token, { path: '/' });        
+      console.log("Login was successful, token saved");
+      
+      navigate("/home");
+      console.log('jwt',cookies);         
+    } catch (error) {
+      if (error.response || error.response.data || error.response.data.error || error.response.data.message === "Username already taken") {
+        //setUsernameError("Username already taken. Please choose a different one.");        
+      } else {
+        console.error(error);
+      }
+    }
+  };
+
   /* Login in authenticating username and password from back-end database. 
   This function is triggered when the user clicks the login button.*/
   const handleLogin = async (e) => {    
@@ -70,15 +159,17 @@ export default function AuthPage() {
  }
 };
 
-/* This effect hook runs when the component mounts.
-It checks if a JWT token exists in cookies.
-If a token exists, it automatically redirects the user to the home page.*/
-useEffect(() => {
-  const token = cookies.jwt;
-  if (token) {
-    navigate("/home");
-  }
-}, [navigate, cookies]);
+
+
+const handleClose = () => {
+  setModalShow(false);
+  setUsername("");
+  setPassword("");
+  setUsernameError("");
+  setPasswordStrengthError("");
+  setUsernameAvailabilityError("");
+  //setShow(false)
+};
 
   return (
     <Container >
@@ -86,6 +177,7 @@ useEffect(() => {
         <Col sm={4}></Col> 
             <Col className="my-3 border border-primary rounded m-2 p-2 bg-primary bg-gradient text-white" sm={4}>
                     <h1 className="my-3">Login to your account</h1>
+                   
                     <Form>
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label className="d-flex text-start">Username</Form.Label>
@@ -97,7 +189,7 @@ useEffect(() => {
                             />
                             {usernameError && <p style={{ color: 'red' }}>{usernameError}</p>}
                             <Form.Text className="d-flex text-start text-white">
-                            Username: philip
+                            Username: aron
                             </Form.Text>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -110,11 +202,63 @@ useEffect(() => {
                             />
                              {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>} 
                             <Form.Text className="d-flex text-start text-white">
-                            Password: password123
+                            Password: Philip1980*
                             </Form.Text>                   
                         </Form.Group>
                         <Button variant="secondary" onClick={handleLogin}>Login</Button>
+                        <Button variant="danger" className="mx-2" onClick={handleShowSignUp}>Register</Button>
                     </Form>
+                    <Modal
+                      show={modalShow}
+                      onHide={handleClose}
+                      animation={false}
+                      centered
+                    >
+                      <Modal.Body>                       
+                        <Form
+                          className="d-grid gap-2 px-5"
+                          onSubmit={handleSignUp}
+                        >
+                          <Form.Group className="mb-3" controlId="formBasicEmail">
+                            <Form.Control                             
+                              type="text"
+                              placeholder="Enter username"
+                              value={username}
+                              onChange={(e) => setUsername(e.target.value)}
+                            />
+                            { usernameAvailabilityError && (
+                                <p style={{ color: 'red' }}>{usernameAvailabilityError}</p>
+                              )}
+                            
+                          </Form.Group>
+
+                          <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Control
+                              onChange={(e) => setPassword(e.target.value)}
+                              type="password"
+                              placeholder="Password"
+                            />
+                            {passwordStrengthError && (
+                              <p style={{ color: 'red' }}>{passwordStrengthError}</p>
+                            )}
+                            {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
+                          </Form.Group>
+                          <p style={{ fontSize: "12px" }}>
+                            By signing up, you agree to the Terms of Service and Privacy
+                            Policy, including Cookie Use. SigmaTweets may use your contact
+                            information, including your email address and phone number for
+                            purposes outlined in our Privacy Policy, like keeping your
+                            account secure and personalising our services, including ads.
+                            Learn more. Others will be able to find you by email or phone
+                            number, when provided, unless you choose otherwise here.
+                          </p>
+
+                          <Button className="rounded-pill" type="submit">
+                           Submit
+                          </Button>
+                        </Form>
+                      </Modal.Body>
+                    </Modal>
             </Col>
         <Col sm={4}></Col>
       </Row>
